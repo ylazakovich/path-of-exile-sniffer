@@ -9,15 +9,17 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Download artifacts
+      - name: 🔨Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: 📦Download artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - uses: dorny/test-reporter@v1
+      - name: 🔬Report summary
+        uses: dorny/test-reporter@v1
         with:
-          name: "📎 Test report: $1 $2"
+          name: "🔬Test report: $1 $2"
           artifact: /test-report-(.*)-(.*)/
           path: "**/build/test-results/**/TEST-*.xml"
           reporter: java-junit

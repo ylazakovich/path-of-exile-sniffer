@@ -15,33 +15,34 @@ jobs:
       matrix:
         gradle-task: ["check"]
     steps:
-      - name: Checkout
+      - name: 🔨Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Check repository over Prettier
+      - name: 🔬Check repository over Prettier
         uses: actionsx/prettier@3d9f7c3fa44c9cb819e68292a328d7f4384be206 # v3
         with:
           args: --check --ignore-unknown '**/*.*'
-      - name: Set up JDK
+      - name: 🔨Set up JDK
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
           distribution: "corretto"
           cache: "gradle"
           java-version: "17"
-      - name: Build with Gradle
+      - name: 🔨Build with Gradle
         uses: gradle/actions/setup-gradle@0bdd871935719febd78681f197cd39af5b6e16a6 # v4
-      - name: Docker compose - MariaDB start
+      - name: 🚀Start Database
         run: |
           chmod +x .github/scripts/compose/run_mariadb
           .github/scripts/compose/run_mariadb
         shell: bash
-      - name: Spring - A8r start
+      - name: 🚀Start Aggregator
         run: |
           chmod +x .github/scripts/spring/run_a8r
           .github/scripts/spring/run_a8r
         shell: bash
-      - name: Run the unit tests
+      - name: 🚀Run the unit tests
         run: ./gradlew ${{ matrix.gradle-task }} --no-parallel --no-daemon --console=plain
-      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+      - name: 📦Packing test artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         if: always()
         with:
           name: test-report-linux-${{ matrix.gradle-task }}
@@ -49,14 +50,15 @@ jobs:
           path: |
             **/build/reports
             **/build/test-results
-      - name: Run Test Coverage
+      - name: 🔬Run Test Coverage
         run: ./gradlew jacocoTestReport
-      - name: Generate JaCoCo Badge
+      - name: 🔨Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@f33476a5a3fd5a4f77cb5eef2ebe728c1dd5b921 # v2
         with:
           generate-branches-badge: true
           jacoco-csv-file: "**/build/reports/jacoco/test/jacocoTestReport.csv"
-      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+      - name: 📦 Packing coverage artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         if: always()
         with:
           name: coverage-report-linux-${{ matrix.gradle-task }}
